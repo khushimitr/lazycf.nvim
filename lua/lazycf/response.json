@@ -1,0 +1,47 @@
+{
+  "name": "C1. Message Transmission Error (easy version)",
+  "group": "Codeforces - Testing Round 19 (Div. 3)",
+  "languages": {
+    "java": {
+      "taskClass": "C1MessageTransmissionErrorEasyVersion",
+      "mainClass": "Main"
+    }
+  },
+  "tests": [
+    {
+      "output": "YES\nabrakadabra\n",
+      "input": "abrakadabrabrakadabra\n"
+    },
+    {
+      "output": "YES\nacaca\n",
+      "input": "acacacaca\n"
+    },
+    {
+      "output": "NO\n",
+      "input": "abcabc\n"
+    },
+    {
+      "output": "YES\nababab\n",
+      "input": "abababab\n"
+    },
+    {
+      "output": "NO\n",
+      "input": "tatbt\n"
+    }
+  ],
+  "testType": "single",
+  "memoryLimit": 256,
+  "interactive": false,
+  "url": "https:\/\/codeforces.com\/problemset\/problem\/2010\/C1",
+  "batch": {
+    "id": "43d21202-c40c-4935-bb5d-ba85b21b7889",
+    "size": 1
+  },
+  "input": {
+    "type": "stdin"
+  },
+  "output": {
+    "type": "stdout"
+  },
+  "timeLimit": 2000
+}
