@@ -1,5 +1,4 @@
 local Problem = require("lazycf.problem")
-local config = require("lazycf.config"):new()
 
 local function on_new_connection(stream, cwd)
 	local buffer = ""
@@ -120,12 +119,20 @@ local function start_server()
 	end)
 end
 
+local function main()
+	local config = require("lazycf.config"):new()
+	config:registerKeyMaps()
+
+	-- Start the server
+	start_server()
+end
+
 local function setup()
 	vim.api.nvim_create_autocmd("VimEnter", {
 		group = augroup,
 		desc = "Start the server to listen for any codeforces problem",
 		once = true,
-		callback = start_server,
+		callback = main,
 	})
 end
 
