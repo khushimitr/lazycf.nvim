@@ -1,4 +1,5 @@
 local Problem = require("lazycf.problem")
+local config = require("lazycf.config"):new()
 
 local function on_new_connection(stream, cwd)
 	local buffer = ""
@@ -16,8 +17,8 @@ local function on_new_connection(stream, cwd)
 
 				-- Extract the HTTP method
 				local method = buffer:match("^(%w+)")
-
-				if method == "POST" then
+				if method == "GET" then
+				elseif method == "POST" then
 					-- Attempt to parse the JSON body
 					local json_data = vim.json.decode(body)
 					-- if err then
@@ -85,7 +86,6 @@ local function on_new_connection(stream, cwd)
 				stream:shutdown()
 
 				stream:close()
-				print("stream closed, now you start coding!!")
 			end
 		end
 	end)
@@ -103,7 +103,6 @@ local function start_server()
 
 	-- Bind to the port
 	server:bind("127.0.0.1", 27121)
-
 	-- Start listening for incoming connections
 	server:listen(128, function(err)
 		if err then
@@ -120,7 +119,6 @@ local function start_server()
 end
 
 local function main()
-	local config = require("lazycf.config"):new()
 	config:registerKeyMaps()
 
 	-- Start the server
