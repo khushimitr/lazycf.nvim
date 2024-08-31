@@ -1,9 +1,11 @@
+local mappings = require("lazycf.mappings")
+
 ---@class Config
 ---@field timeout number
 ---@field port number
 ---@field extensions string[]
 ---@field defaultLanguage string
----@field cwd string
+---@field defaultKeymaps table
 local Config = {}
 
 function Config:new()
@@ -20,8 +22,13 @@ function Config:new()
 	return config
 end
 
-function setCwd(self, cwd)
-	self.cwd = cwd
+function Config:registerKeyMaps()
+	local myKeymaps = mappings.defaultMappings
+
+	for k, v in pairs(myKeymaps) do
+		vim.keymap.set("n", k, v.action, { desc = v.description })
+	end
+	self.defaultKeymaps = myKeymaps
 end
 
 return Config
