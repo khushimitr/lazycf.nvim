@@ -42,7 +42,7 @@ Content-Type: application/json
 	end
 end
 
-function Server:handlePOST(body, cwd)
+function Server:handlePOST(body)
 	local json_data = vim.json.decode(body)
 	-- if err then
 	-- 	print("Error parsing JSON: " .. err)
@@ -72,6 +72,7 @@ function Server:handlePOST(body, cwd)
 
 	local defaultLanguage = config.defaultLanguage
 
+	local cwd = vim.uv.cwd()
 	local sourcePath = cwd .. "/" .. problem.fname .. defaultLanguage
 	problem.srcPath = sourcePath
 
@@ -100,7 +101,7 @@ function Server:handlePOST(body, cwd)
 	problem:writeProblemToJson(cwd)
 end
 
-function Server:on_new_connection(cwd)
+function Server:on_new_connection()
 	local buffer = ""
 
 	self.client:read_start(function(err, data)
@@ -121,7 +122,7 @@ function Server:on_new_connection(cwd)
 				elseif method == "POST" then
 					-- Attempt to parse the JSON body
 					-- end
-					self:handlePOST(body, cwd)
+					self:handlePOST(body)
 				else
 					self.client:write("Only POST requests are supported\n")
 				end
@@ -136,7 +137,6 @@ function Server:on_new_connection(cwd)
 end
 
 function Server:startServer()
-	local cwd = vim.fn.getcwd()
 	self.server:bind("127.0.0.1", 27121)
 	self.server:listen(128, function(err)
 		if err then
@@ -145,7 +145,7 @@ function Server:startServer()
 		end
 		self.client = vim.uv.new_tcp()
 		self.server:accept(self.client)
-		self:on_new_connection(cwd)
+		self:on_new_connection()
 	end)
 end
 
