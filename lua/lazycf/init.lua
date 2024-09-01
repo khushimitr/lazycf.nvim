@@ -1,5 +1,7 @@
 local Problem = require("lazycf.problem")
+local Server = require("lazycf.server")
 local config = require("lazycf.config"):new()
+-- local Server = require("lazycf.server")
 
 local function on_new_connection(stream, cwd)
 	local buffer = ""
@@ -18,6 +20,13 @@ local function on_new_connection(stream, cwd)
 				-- Extract the HTTP method
 				local method = buffer:match("^(%w+)")
 				if method == "GET" then
+					stream:write(
+						"HTTP/1.1 200 OK\r\n"
+							.. "Content-Type: text/plain\r\n"
+							.. "Content-Length: 13\r\n"
+							.. "Connection: close\r\n\r\n"
+							.. "Hello, World!"
+					)
 				elseif method == "POST" then
 					-- Attempt to parse the JSON body
 					local json_data = vim.json.decode(body)
@@ -98,6 +107,7 @@ local uv = vim.uv
 -- Function to start the TCP server
 local function start_server()
 	local server = uv.new_tcp()
+	local client = uv.new_tcp()
 	local cwd = vim.fn.getcwd()
 	-- config:setCwd(cwd)
 
@@ -109,10 +119,9 @@ local function start_server()
 			print("Error starting server: " .. err)
 			return
 		end
-		print("Server listening on port 27121")
 
 		-- Accept new connections
-		local client = uv.new_tcp()
+		client = uv.new_tcp()
 		server:accept(client)
 		on_new_connection(client, cwd)
 	end)
@@ -122,7 +131,10 @@ local function main()
 	config:registerKeyMaps()
 
 	-- Start the server
-	start_server()
+	-- start_server()
+
+	local server = GiveServerInstance()
+	server:startServer()
 end
 
 local function setup()

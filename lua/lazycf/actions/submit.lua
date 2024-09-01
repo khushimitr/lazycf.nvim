@@ -1,7 +1,3 @@
-local curl = require("plenary.curl")
-
-local url = "http://localhost:27121"
-
 local M = {}
 
 ---comment
@@ -37,5 +33,8 @@ M.submitIt = function()
 		data = vim.json.decode(content)
 	end
 	local body = generateDataToSubmit(data)
+	local server = GiveServerInstance()
+	-- server.handleGET(body)
+	server:setResult(body)
 end
 return M
