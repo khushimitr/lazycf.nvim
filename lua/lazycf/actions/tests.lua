@@ -1,30 +1,30 @@
-local ui = require("lazycf.ui")
-
+local config = require("lazycf.config")
+local state = require("lazycf.ui.state")
 local M = {}
+
 local function runTestCase(filePath, apathFile, testCase)
 	local result = vim.system({ "g++", filePath }, { text = true }):wait()
 	if result.code == 0 and result.stderr == "" then
-		print("Compilation successful")
 		local result2 = vim.system({ apathFile }, { stdin = testCase.input }):wait()
+		testCase.result = result2
 		if result2.stdout == testCase.output then
-			print("pass")
+			testCase.status = "Passed"
 		else
-			print("fail")
+			testCase.status = "Failed"
 		end
 	else
-		print("Compilation failed")
+		testCase.status = "Failed"
 	end
+	P(testCase)
+	return testCase
 end
 
 local function executeTestCase(filename, root_dir, filePath)
-	print("Executing test cases")
-	filename = filename:gsub("%s+", "")
-	filename = filename:sub(1, #filename - 4)
+	coroutine.yield()
 	local metadataFile = root_dir .. "/.cph/." .. filename .. ".json"
 	local apathFile = root_dir .. "/./a.out"
 
-	-- read testcases
-	--
+	print(metadataFile)
 	local testCases = {}
 	local file = io.open(metadataFile, "r")
 	if file ~= nil then
@@ -33,18 +33,35 @@ local function executeTestCase(filename, root_dir, filePath)
 		local data = vim.json.decode(content)
 		testCases = data.tests
 	end
-	for i = 1, #testCases do
-		runTestCase(filePath, apathFile, testCases[i])
+	P(testCases)
+	local res = {}
+	for k, v in pairs(testCases) do
+		local t = runTestCase(filePath, apathFile, v)
+		res[k] = t
 	end
+	P(res)
+	return res
 end
-M.runTestcases = function()
-	print("Running tests")
 
-	local root_dir = vim.fn.getcwd()
-	local filename = vim.fn.expand("%:t")
-	local filePath = vim.fn.expand("%:p")
-	-- ui.open_popup()
-	executeTestCase(filename, root_dir, filePath)
+M.runTestcases = function()
+	local results = {}
+	local co = coroutine.create(executeTestCase)
+	coroutine.resume(co, config.filename, config.root_dir, config.filepath)
+	vim.schedule(function()
+		while true do
+			local status, result = coroutine.resume(co)
+			if not status then
+				state.isLoading = false
+				vim.notify("Something went wrong" .. result, vim.log.levels.ERROR)
+				break
+			end
+			if result then
+				state.isLoading = false
+				state.result = result
+				break
+			end
+		end
+	end)
 end
 
 return M

@@ -1,5 +1,5 @@
 local Problem = require("lazycf.problem")
-local config = require("lazycf.config"):new()
+local config = require("lazycf.config")
 
 local Server = {}
 
@@ -44,12 +44,6 @@ end
 
 function Server:handlePOST(body)
 	local json_data = vim.json.decode(body)
-	-- if err then
-	-- 	print("Error parsing JSON: " .. err)
-	-- 	stream:write("Invalid JSON\n")
-	-- else
-	-- Print JSON data to Neovim
-
 	print("Received JSON : " .. vim.json.encode(json_data) .. "\n")
 
 	local problem = Problem:new(

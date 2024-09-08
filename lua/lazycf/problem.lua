@@ -34,12 +34,15 @@ function Problem:new(name, url, interactive, memoryLimit, timeLimit, group, test
 end
 
 local function generated_random_integer_id()
-	return math.random(2 ^ 31 - 1)
+	return "tc" .. tostring(math.random(2 ^ 31 - 1))
 end
 
 function Problem:giveTestIds()
-	for i = 1, #self.tests do
-		self.tests[i].id = generated_random_integer_id()
+	local tests = self.tests
+	self.tests = {}
+	for i = 1, #tests do
+		local id = generated_random_integer_id()
+		self.tests[id] = tests[i]
 	end
 end
 
