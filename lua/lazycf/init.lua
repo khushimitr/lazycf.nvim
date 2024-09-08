@@ -1,7 +1,7 @@
 local Problem = require("lazycf.problem")
 local Server = require("lazycf.server")
-local config = require("lazycf.config"):new()
--- local Server = require("lazycf.server")
+local Mappings = require("lazycf.mappings")
+local Autocmd = require("lazycf.autocmd")
 
 local function on_new_connection(stream, cwd)
 	local buffer = ""
@@ -128,11 +128,8 @@ local function start_server()
 end
 
 local function main()
-	config:registerKeyMaps()
-
-	-- Start the server
-	-- start_server()
-
+	Mappings:registerKeyMaps()
+	Autocmd:init()
 	local server = GiveServerInstance()
 	server:startServer()
 end

@@ -21,7 +21,6 @@ end
 M.submitIt = function()
 	local root_dir = vim.fn.getcwd()
 	local filename = vim.fn.expand("%:t")
-	-- local filePath = vim.fn.expand("%:p")
 	filename = filename:gsub("%s+", "")
 	filename = filename:sub(1, #filename - 4)
 	local metadataFile = root_dir .. "/.cph/." .. filename .. ".json"
@@ -34,7 +33,6 @@ M.submitIt = function()
 	end
 	local body = generateDataToSubmit(data)
 	local server = GiveServerInstance()
-	-- server.handleGET(body)
 	server:setResult(body)
 end
 return M
